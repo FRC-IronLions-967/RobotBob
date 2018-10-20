@@ -1,14 +1,14 @@
 package frc.team967.robot.subsystems;
 
-import frc.team967.robot.Robot;
-import frc.team967.robot.RobotMap;
-import frc.team967.robot.commands.LiftMove;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team967.robot.RobotConstraints;
+import frc.team967.robot.RobotMap;
+import frc.team967.robot.commands.LiftMove;
 
 /**
  *
@@ -23,6 +23,8 @@ public class LiftSubsystem extends Subsystem {
 	
 	private DoubleSolenoid liftShift;
 	private DoubleSolenoid busterBrake;
+
+	private static final double deadBand = RobotConstraints.DriveSubsystem_deadBand;
 
     public LiftSubsystem(){
     	liftLead = new WPI_TalonSRX(RobotMap.liftLead);
@@ -64,10 +66,12 @@ public class LiftSubsystem extends Subsystem {
         //     // liftLead.set(0);
         // }
         // else if (power < 0) {
-			if (power > +.05 && power < -.05){
-				liftLead.set(power);
-			} 
-        // }
+			// if (power > +.05 && power < -.05){
+			// 	liftLead.set(power);
+			// } 
+		if((power< deadBand) && (power > -deadBand)){ power=0;}
+		liftLead.set(power); 
+			// }
     }
     
     public void shiftLift(String position) {
